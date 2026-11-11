@@ -6,8 +6,9 @@ export function HSAuthProvider({
   children,
   name,
   ownerid,
+  secret,
   version = '1.0',
-  apiUrl = 'https://api.hsauth.mujahid.xyz/api/1.3/',
+  apiUrl = 'https://hsauth.mujahid.xyz/api/1.3/',
 }) {
   const [user, setUser] = useState(null);
   const [sessionId, setSessionId] = useState(() => localStorage.getItem('hsauth_sess') || null);
@@ -25,9 +26,13 @@ export function HSAuthProvider({
   }, []);
 
   const request = useCallback(async (params) => {
+    if (!secret) {
+      return { success: false, message: 'Application secret is required' };
+    }
     const postData = new URLSearchParams({
       name,
       ownerid,
+      secret,
       ...params,
     });
     const res = await fetch(apiUrl.replace(/\/+$/, '') + '/', {
@@ -36,7 +41,7 @@ export function HSAuthProvider({
       body: postData.toString(),
     });
     return await res.json();
-  }, [name, ownerid, apiUrl]);
+  }, [name, ownerid, secret, apiUrl]);
 
   const init = useCallback(async () => {
     try {
