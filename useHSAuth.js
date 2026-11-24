@@ -6,7 +6,6 @@ export function HSAuthProvider({
   children,
   name,
   ownerid,
-  secret,
   version = '1.0',
   apiUrl = 'https://auth.hsdevs.pro/api/1.3/',
 }) {
@@ -26,13 +25,9 @@ export function HSAuthProvider({
   }, []);
 
   const request = useCallback(async (params) => {
-    if (!secret) {
-      return { success: false, message: 'Application secret is required' };
-    }
     const postData = new URLSearchParams({
       name,
       ownerid,
-      secret,
       ...params,
     });
     const res = await fetch(apiUrl.replace(/\/+$/, '') + '/', {
@@ -41,7 +36,7 @@ export function HSAuthProvider({
       body: postData.toString(),
     });
     return await res.json();
-  }, [name, ownerid, secret, apiUrl]);
+  }, [name, ownerid, apiUrl]);
 
   const init = useCallback(async () => {
     try {
